@@ -182,13 +182,15 @@ def test_model_data_dependency(sample_data, preprocessor):
     y = sample_data["Survived"].astype(int)
     ac_list = []
     N = 10
-    for i in range(N):
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2)
+    for _ in range(N):
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
         model = Pipeline(
             steps=[
                 ("preprocessor", preprocessor),
-                ("classifier", RandomForestClassifier(n_estimators=100, random_state=42)),
+                (
+                    "classifier",
+                    RandomForestClassifier(n_estimators=100, random_state=42),
+                ),
             ]
         )
 
@@ -197,6 +199,8 @@ def test_model_data_dependency(sample_data, preprocessor):
         ac = accuracy_score(y_test, y_pred)
         ac_list.append(ac)
     ac_mean = sum(ac_list) / len(ac_list)
-    ac_offset = max([abs(i-ac_mean) for i in ac_list])
+    ac_offset = max([abs(i - ac_mean) for i in ac_list])
 
-    assert ac_offset < 0.1, (f"データ分割による精度のばらつきが大きすぎます (最大偏差 {ac_offset:.3f} ≥ 0.1)")
+    assert (
+        ac_offset < 0.1
+    ), f"データ分割による精度のばらつきが大きすぎます (最大偏差 {ac_offset:.3f} ≥ 0.1)"
